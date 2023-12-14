@@ -8,6 +8,7 @@ import { Transformer } from '../transformer';
 
 export type GenerateOptions = {
   camelCase?: boolean;
+  tableNameSuffix?: string;
   db: Kysely<any>;
   dialect: Dialect;
   excludePattern?: string;
@@ -49,6 +50,7 @@ export class Generator {
     const transformer = options.transformer ?? new Transformer();
     const nodes = transformer.transform({
       camelCase: !!options.camelCase,
+      tableNameSuffix: options.tableNameSuffix,
       defaultSchema: options.schema,
       dialect: options.dialect,
       metadata,

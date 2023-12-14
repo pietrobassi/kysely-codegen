@@ -9,6 +9,7 @@ export const testCli = () => {
 
   const DEFAULT_CLI_OPTIONS: CliOptions = {
     camelCase: false,
+    tableNameSuffix: undefined,
     dialectName: undefined,
     envFile: undefined,
     excludePattern: undefined,

@@ -18,6 +18,7 @@ import { FLAGS } from './flags';
 
 export type CliOptions = {
   camelCase: boolean;
+  tableNameSuffix: string | undefined;
   dialectName: DialectName | undefined;
   envFile: string | undefined;
   excludePattern: string | undefined;
@@ -31,7 +32,7 @@ export type CliOptions = {
   verify: boolean | undefined;
 };
 
-export type LogLevelName = typeof LOG_LEVEL_NAMES[number];
+export type LogLevelName = (typeof LOG_LEVEL_NAMES)[number];
 
 /**
  * Creates a kysely-codegen command-line interface.
@@ -39,6 +40,7 @@ export type LogLevelName = typeof LOG_LEVEL_NAMES[number];
 export class Cli {
   async generate(options: CliOptions) {
     const camelCase = !!options.camelCase;
+    const tableNameSuffix = options.tableNameSuffix;
     const outFile = options.outFile;
     const excludePattern = options.excludePattern;
     const includePattern = options.includePattern;
@@ -76,6 +78,7 @@ export class Cli {
 
     await generator.generate({
       camelCase,
+      tableNameSuffix,
       db,
       dialect,
       excludePattern,
@@ -147,6 +150,7 @@ export class Cli {
 
     const _: string[] = argv._;
     const camelCase = this.#parseBoolean(argv['camel-case']);
+    const tableNameSuffix = argv['table-name-suffix'] as string | undefined;
     const dialectName = argv.dialect;
     const help =
       !!argv.h || !!argv.help || _.includes('-h') || _.includes('--help');
@@ -212,6 +216,7 @@ export class Cli {
 
     return {
       camelCase,
+      tableNameSuffix,
       dialectName,
       envFile,
       excludePattern,

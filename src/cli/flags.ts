@@ -12,6 +12,12 @@ export const FLAGS: Flag[] = [
     longName: 'camel-case',
   },
   {
+    description:
+      'Add a suffix to generated table interface names. ' +
+      '(examples: Schema, Table)',
+    longName: 'table-name-suffix',
+  },
+  {
     description: `Set the SQL dialect. (values: [${VALID_DIALECTS.join(
       ', ',
     )}])`,

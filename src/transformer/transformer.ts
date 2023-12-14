@@ -43,6 +43,7 @@ const unionize = (args: ExpressionNode[]) => {
 
 export type TransformContext = {
   camelCase: boolean;
+  tableNameSuffix: string | undefined;
   defaultScalar: ExpressionNode;
   defaultSchema: string | null;
   definitions: Definitions;
@@ -55,6 +56,7 @@ export type TransformContext = {
 
 export type TransformOptions = {
   camelCase: boolean;
+  tableNameSuffix?: string | undefined;
   defaultSchema?: string;
   dialect: Dialect;
   metadata: DatabaseMetadata;
@@ -145,6 +147,7 @@ export class Transformer {
   #createContext(options: TransformOptions): TransformContext {
     return {
       camelCase: options.camelCase,
+      tableNameSuffix: options.tableNameSuffix,
       defaultScalar:
         options.dialect.adapter.defaultScalar ?? new IdentifierNode('unknown'),
       defaultSchema:
@@ -174,7 +177,8 @@ export class Transformer {
       const symbolName = context.symbols.getName(identifier);
 
       if (symbolName) {
-        const value = new IdentifierNode(symbolName);
+        const interfaceName = this.#getTableInterfaceName(symbolName, context);
+        const value = new IdentifierNode(interfaceName);
         const tableProperty = new PropertyNode(identifier, value);
         tableProperties.push(tableProperty);
       }
@@ -230,6 +234,10 @@ export class Transformer {
         ? `${table.schema}.${table.name}`
         : table.name;
     return this.#transformName(name, context);
+  }
+
+  #getTableInterfaceName(name: string, context: TransformContext) {
+    return `${name}${context.tableNameSuffix ?? ''}`;
   }
 
   #transformColumn(column: ColumnMetadata, context: TransformContext) {
@@ -332,8 +340,9 @@ export class Transformer {
       const symbolName = context.symbols.set(identifier, {
         type: SymbolType.TABLE,
       });
+      const interfaceName = this.#getTableInterfaceName(symbolName, context);
       const tableNode = new ExportStatementNode(
-        new InterfaceDeclarationNode(symbolName, expression),
+        new InterfaceDeclarationNode(interfaceName, expression),
       );
       tableNodes.push(tableNode);
     }
